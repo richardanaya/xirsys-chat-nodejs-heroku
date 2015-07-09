@@ -69,15 +69,21 @@
 					self.ref.createRoom(self.token, $fun);
 				});
 			},
-			joinRoom : function ($room) {
+			joinRoom : function ($room,$token) {
 				var self = this;
 				if (!!$room) {
 					this.xirsys_opts.room = $room;
 				}
-				this.getToken(null, null, function ($data) {
-					self.token = $data.d.token;
+				if($token){
+					self.token = $token;
 					self.ref.joinRoom(self.token);
-				});
+				}
+				else {
+					this.getToken(null, null, function ($data) {
+						self.token = $data.d.token;
+						self.ref.joinRoom(self.token);
+					});
+				}
 			},
 			getToken : function ($url, $data, $cb) {
 				var self = this;
@@ -98,7 +104,7 @@
 				this.ref.shareScreen($handle);
 			}
 		},
-		statics : {
+		statics: {
 			tokenUrl : $xirsys.baseUrl + "signal/token"
 		}
 	});

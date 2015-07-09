@@ -17,14 +17,7 @@
         <button id="sendButton">Send</room>
         <script>
             var webrtc = new $xirsys.simplewebrtc(); //add secure server stuff here?
-            webrtc.connect(
-                {
-                    domain : '',
-                    application : 'default',
-                    room : 'default',
-                    ident : '',
-                    secret : ''
-                },
+            webrtc.connect({},
                 {
                     // we don't do video
                     localVideoEl: '',
@@ -43,7 +36,12 @@
             
             $('#joinButton').click(function(){
                 var room = $('#room').val();
-                webrtc.joinRoom(room);
+                $.get("/token", function(token) {
+                    webrtc.joinRoom(room,token);
+                })
+                .error(function(xhr) {
+                    console.error(xhr);
+                })
             })
 
             $('#sendButton').click(function(){
