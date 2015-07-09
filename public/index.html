@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+        <script src="lib/xirsys.core.js"></script>
+        <script src="lib/xirsys.api.js"></script>
+        <script src="lib/xirsys.simplewebrtc.js"></script>
+        <script src="lib/simplewebrtc.bundle.js"></script>
+        <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    </head>
+    <body>
+        <input id="room" value="default">
+        <button id="joinButton">Join</button>
+        <div id="chatArea">
+        </div>
+        <input id="textInput"></input>
+        <button id="sendButton">Send</room>
+        <script>
+            var webrtc = new $xirsys.simplewebrtc(); //add secure server stuff here?
+            webrtc.connect(
+                {
+                    domain : '',
+                    application : 'default',
+                    room : 'default',
+                    ident : '',
+                    secret : ''
+                },
+                {
+                    // we don't do video
+                    localVideoEl: '',
+                    remoteVideosEl: '',
+                    // dont ask for camera access
+                    autoRequestMedia: false,
+                    // dont negotiate media
+                    receiveMedia: {
+                        mandatory: {
+                            OfferToReceiveAudio: false,
+                            OfferToReceiveVideo: false
+                        }
+                    }
+                }
+            );
+            
+            $('#joinButton').click(function(){
+                var room = $('#room').val();
+                webrtc.joinRoom(room);
+            })
+
+            $('#sendButton').click(function(){
+                var t = $('#textInput').val();
+                addText(t);
+                webrtc.ref.sendDirectlyToAll("text chat", "chat", t);
+            })
+
+            function addText(t){
+                $('#chatArea').append(t+"<br>")
+            }
+
+            webrtc.on('createdPeer', function (peer) {
+                addText('createdPeer', peer);
+            });
+
+            webrtc.on("channelMessage", function(peer, channel, data) { 
+                addText(data.payload);
+            });
+        </script>
+    </body>
+</html>
